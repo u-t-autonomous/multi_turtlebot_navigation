@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Bringup two turtlebot3s - laptop/remotepc portion -->
+
+  <!-- Command Line Arguments -->
+  <arg name="tb3_0_init_x" default="0.0"/>
+  <arg name="tb3_0_init_y" default="0.0"/>
+  <arg name="tb3_0_init_a" default="0.0"/>
+  <arg name="tb3_0_ip" default="192.168.0.132"/>
+
+  <arg name="tb3_1_init_x" default="0.0"/>
+  <arg name="tb3_1_init_y" default="0.0"/>
+  <arg name="tb3_1_init_a" default="0.0"/>
+  <arg name="tb3_1_ip" default="192.168.0.133"/>
+
+  <arg name="tb3_2_init_x" default="0.0"/>
+  <arg name="tb3_2_init_y" default="0.0"/>
+  <arg name="tb3_2_init_a" default="0.0"/>
+  <arg name="tb3_2_ip" default="192.168.0.100"/>
+
+  <!-- Default value for location of map config file -->
+  <arg name="map_file" default="$(env HOME)/map.yaml"/>
+
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro'" />
+
+  
+  <!--<node name="timesync" pkg="turtlebot3_navigation" type="timesync.sh" args ="$(arg tb3_0_ip) $(arg tb3_1_ip) $(arg tb3_2_ip)"/> -->
+
+  <!-- Loads robot_description to parameter server from URDF file-->
+  <param name="robot_description" command="$(arg urdf_file)" />
+
+  
+  <!-- Map Server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+  
+  <!-- First Robot -->
+  <group ns="tb3_0">
+    
+    <!-- AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl">
+      <!-- Load default parameters for turtlebot -->
+      <rosparam file="$(find multi_turtlebot_navigation)/param/amcl_params.yaml" command="load" />
+      <param name="initial_pose_x" value="$(arg tb3_0_init_x)"/>
+      <param name="initial_pose_y" value="$(arg tb3_0_init_y)"/>
+      <param name="initial_pose_a" value="$(arg tb3_0_init_a)"/>
+
+      <param name="odom_frame_id"  value="tb3_0/odom"/>
+      <param name="base_frame_id"  value="tb3_0/base_footprint"/>
+
+      <!-- Use the single map server -->
+      <remap from="static_map" to="/static_map"/>
+    </node>
+
+    <include file="$(find multi_turtlebot_navigation)/launch/move_base_namespace.launch">
+      <arg name="robot_namespace" value="tb3_0" />
+    </include>
+  </group>
+
+  <!-- Second Robot -->
+  <group ns="tb3_1">
+
+    
+    <!-- AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl">
+      <!-- Load default parameters for turtlebot -->
+      <rosparam file="$(find multi_turtlebot_navigation)/param/amcl_params.yaml" command="load" />
+      <param name="initial_pose_x" value="$(arg tb3_1_init_x)"/>
+      <param name="initial_pose_y" value="$(arg tb3_1_init_y)"/>
+      <param name="initial_pose_a" value="$(arg tb3_1_init_a)"/>
+
+      <param name="odom_frame_id"  value="tb3_1/odom"/>
+      <param name="base_frame_id"  value="tb3_1/base_footprint"/>
+
+      <!-- Use the single map server -->
+      <remap from="static_map" to="/static_map"/>
+
+    </node>
+
+    
+  </group>
+
+  <!-- Third Robot -->
+  <group ns="tb3_2">
+    
+    <!-- AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl">
+      <!-- Load default parameters for turtlebot -->
+      <rosparam file="$(find multi_turtlebot_navigation)/param/amcl_params.yaml" command="load" />
+      <param name="initial_pose_x" value="$(arg tb3_2_init_x)"/>
+      <param name="initial_pose_y" value="$(arg tb3_2_init_y)"/>
+      <param name="initial_pose_a" value="$(arg tb3_2_init_a)"/>
+
+      <param name="odom_frame_id"  value="tb3_2/odom"/>
+      <param name="base_frame_id"  value="tb3_2/base_footprint"/>
+
+      <!-- Use the single map server -->
+      <remap from="static_map" to="/static_map"/>
+    </node>
+
+  </group>
+
+  <include file="$(find turtlebot3_nps)/launch/move_base_namespace.launch">
+      <arg name="robot_namespace" value="tb3_0" />
+  </include>
+
+  <include file="$(find turtlebot3_nps)/launch/move_base_namespace.launch">
+      <arg name="robot_namespace" value="tb3_1" />
+  </include>
+
+  <include file="$(find turtlebot3_nps)/launch/move_base_namespace.launch">
+      <arg name="robot_namespace" value="tb3_2" />
+  </include>
+
+
+  <!-- RVIZ configured for tb3_0/1 -->
+  <node pkg="rviz" type="rviz" name="rviz" required="true"
+         args="-d $(find multi_turtlebot_navigation)/rviz/two_tb3_one_map_threegoals.rviz"/>
+  
+</launch>
