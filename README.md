@@ -8,6 +8,8 @@ Navigate into your workspace src directory and clone this repository:
   
   git clone https://github.com/u-t-autonomous/multi_turtlebot_navigation.git
   
+  cd ~/catkin_ws
+  
   catkin_make
   
 ## 3 turtlebot navigation
