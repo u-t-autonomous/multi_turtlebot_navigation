@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Default value for location of map config file -->
+  <arg name="map_file" default="$(env HOME)/map.yaml"/>
+
+  <include file="$(find multi_turtlebot_navigation)/launch/navigation_three.launch">
+      <arg name="map_file" value="$(env HOME)/AHGmap7.yaml"/>
+  </include>
+
+  <node pkg="multi_turtlebot_navigation" type="agent0_script.py" name="agent_script"/>
+</launch>

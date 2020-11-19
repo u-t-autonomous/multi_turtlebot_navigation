@@ -31,8 +31,10 @@ class Agent:
 		initialpose.pose.pose.orientation.y = initial_yO
 		initialpose.pose.pose.orientation.z = initial_zO
 		initialpose.pose.pose.orientation.w = initial_wO
+		
+		rospy.sleep(7)
 		self.initial_pose_pub.publish(initialpose)
-		rospy.sleep(5)
+		
 
 	def feedbackCB(self, data):
 		if len(data.status_list) > 0 and data.status_list[-1].status == 3:
