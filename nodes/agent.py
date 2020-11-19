@@ -31,7 +31,7 @@ class Agent:
 		initialpose.pose.pose.orientation.y = initial_yO
 		initialpose.pose.pose.orientation.z = initial_zO
 		initialpose.pose.pose.orientation.w = initial_wO
-		#self.initial_pose_pub.publish(initialpose)
+		self.initial_pose_pub.publish(initialpose)
 		rospy.sleep(5)
 
 	def feedbackCB(self, data):
@@ -42,7 +42,7 @@ class Agent:
 		rel_x = x - self.curr_pose.pose.pose.position.x
 		rel_y = y - self.curr_pose.pose.pose.position.y
 		heading = np.arctan2(rel_y, rel_x)
-		quat = self.euler_to_quaternion(heading, 0, 0)
+		quat = self.__euler_to_quaternion(heading, 0, 0)
 		self.go_to_point_and_orientation(x, y, 0, quat[0], quat[1], quat[2],  quat[3], 2)
 
 	def go_to_point_and_orientation(self, x, y, z, xO, yO, zO, wO, seq):
@@ -67,7 +67,7 @@ class Agent:
 	def curr_poseCB(self, data):
 		self.curr_pose = data
 
-	def euler_to_quaternion(self, yaw, pitch, roll):
+	def __euler_to_quaternion(self, yaw, pitch, roll):
 
 		qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
 		qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)

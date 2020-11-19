@@ -1,0 +1,8 @@
+#goal definition
+Point goal
+---
+#result definition
+boolean success
+---
+#feedback
+Point current_position
